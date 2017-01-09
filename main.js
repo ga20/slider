@@ -10,13 +10,14 @@ function slideBegin() {
 		openClick = true,
 		btnLeft = doc.getElementById('left_btn'),
 		autoTimer,
-		btnRight = doc.getElementById('right_btn');
+		btnRight = doc.getElementById('right_btn'),
+		pauseGo=false;
 	main.style.left = "0px";
 
 	function autoSlide() {
 		var start = parseFloat(main.style.left),
 			end = index * mainWidth * (-1),
-			change = end - start,
+			change = end - start,				//滑动距离
 			timer,
 			t = 0,
 			max = 50; 							//可用于调节滑动速度
@@ -43,11 +44,13 @@ function slideBegin() {
 	}
 
 	function goRight() {		//右滑函数
+		if(!pauseGo){
 		index++;		
 		if (index > btnLi.length) {
 			index = 0
 		}
 		autoSlide();
+	 }
 	}
 
 	function goLeft() {				//左滑函数
@@ -76,12 +79,11 @@ function slideBegin() {
 				})
 			})(i);
 		}
-		main.addEventListener("mouseover", function() { 		//鼠标悬停，取消定时器
-			clearInterval(autoTimer);
-
+		main.addEventListener("mouseover", function() { 		//鼠标悬停，改变标志
+			pauseGo=true;
 		});
-		main.addEventListener("mouseout", function() {			//鼠标离开main 设置定时
-			autoTimer=setInterval(goRight, 4000);
+		main.addEventListener("mouseout", function() {			//鼠标离开main 
+			pauseGo=false;
 		});
 		btnLeft.addEventListener("click", function() { 			//左按钮点击
 			openClick ? goLeft() : "";
@@ -92,14 +94,11 @@ function slideBegin() {
 			openClick = false;
 		});
 		window.addEventListener("focus", function() {
-
-			autoTimer = setInterval(goRight, 4000);
+			pauseGo=false;
 														//当前页面失去焦点，停止计时
 		}); 											//防止因浏览器计时器和动画缓存不一致产生混乱			
 		window.addEventListener("blur", function() {
-			clearInterval(autoTimer);
-			console.log(autoTimer);
-			console.log("blur");
+			pauseGo=true;	
 		});
 	}
 	autoTimer = setInterval(goRight, 4000);
